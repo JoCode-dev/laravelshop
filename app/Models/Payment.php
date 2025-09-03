@@ -4,10 +4,23 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Enums\PaymentStatus;
 
 class Payment extends Model
 {
-    protected $fillable = ['order_id', 'amount', 'status'];
+    use HasFactory;
+
+    protected $fillable = [
+        'order_id',
+        'amount',
+        'status',
+        'transaction_id',
+    ];
+
+    protected $casts = [
+        'status' => PaymentStatus::class
+    ];
 
     public function order(): BelongsTo
     {
