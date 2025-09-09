@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CartRequest;
 use App\Models\Cart;
 use App\Traits\ApiResponses;
+use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,6 +14,11 @@ use Symfony\Component\HttpFoundation\Response;
 class CartController extends Controller
 {
     use ApiResponses;
+
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum');
+    }
 
     // ✅ Récupérer le panier (session ou DB selon l'état de connexion)
     public function index(Request $request): JsonResponse
@@ -48,7 +54,7 @@ class CartController extends Controller
                 // Utilisateur connecté → Sauvegarder en DB
                 $user = $request->user();
                 $validatedData = $request->validated();
-                
+
                 $cart = Cart::updateOrCreate(
                     [
                         'user_id' => $user->id,
@@ -65,9 +71,9 @@ class CartController extends Controller
                 // Visiteur anonyme → Sauvegarder en session
                 $validatedData = $request->validated();
                 $validatedData['id'] = uniqid(); // ID unique pour la session
-                
+
                 $cartItems = session()->get('cart', []);
-                
+
                 // Vérifier si le produit existe déjà dans le panier session
                 $existingIndex = null;
                 foreach ($cartItems as $index => $item) {
@@ -76,7 +82,7 @@ class CartController extends Controller
                         break;
                     }
                 }
-                
+
                 if ($existingIndex !== null) {
                     // Mettre à jour la quantité si le produit existe déjà
                     $cartItems[$existingIndex]['quantity'] += $validatedData['quantity'];
@@ -84,7 +90,7 @@ class CartController extends Controller
                     // Ajouter un nouvel élément
                     $cartItems[] = $validatedData;
                 }
-                
+
                 session()->put('cart', $cartItems);
                 $data = $validatedData;
             }
@@ -109,7 +115,7 @@ class CartController extends Controller
                 // Utilisateur connecté → Mettre à jour en DB
                 $user = $request->user();
                 $validatedData = $request->validated();
-                
+
                 $cartItem = Cart::where('id', $id)
                     ->where('user_id', $user->id)
                     ->first();
@@ -130,7 +136,7 @@ class CartController extends Controller
                 // Visiteur anonyme → Mettre à jour en session
                 $validatedData = $request->validated();
                 $cartItems = session()->get('cart', []);
-                
+
                 foreach ($cartItems as $key => $item) {
                     if ($item['id'] == $id) {
                         $cartItems[$key]['quantity'] = $validatedData['quantity'];
@@ -138,7 +144,7 @@ class CartController extends Controller
                         break;
                     }
                 }
-                
+
                 session()->put('cart', $cartItems);
                 $data = $validatedData;
             }
@@ -162,7 +168,7 @@ class CartController extends Controller
             if (request()->user()) {
                 // Utilisateur connecté → Supprimer de la DB
                 $user = request()->user();
-                
+
                 $cartItem = Cart::where('id', $id)
                     ->where('user_id', $user->id)
                     ->first();
@@ -177,10 +183,10 @@ class CartController extends Controller
             } else {
                 // Visiteur anonyme → Supprimer de la session
                 $cartItems = session()->get('cart', []);
-                $cartItems = array_filter($cartItems, function($item) use ($id) {
+                $cartItems = array_filter($cartItems, function ($item) use ($id) {
                     return $item['id'] !== $id;
                 });
-                
+
                 session()->put('cart', array_values($cartItems));
             }
 
@@ -224,7 +230,7 @@ class CartController extends Controller
         try {
             $user = $request->user();
             $sessionCart = session()->get('cart', []);
-            
+
             if (empty($sessionCart)) {
                 return $this->successResponse([
                     'message' => 'No session cart to migrate',

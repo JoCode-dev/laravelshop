@@ -21,7 +21,6 @@ class AuthController extends Controller
         $credentials = $request->validated();
 
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
             /** @var \App\Models\User $user */
             $user = Auth::user();
             $token = $user->createToken('auth_token')->plainTextToken;
@@ -41,8 +40,8 @@ class AuthController extends Controller
 
     public function logout(Request $request): JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
         $request->session()->invalidate();
+        $request->user()->currentAccessToken()->delete();
 
         return $this->successResponse([
             'message' => 'Logout successful',
@@ -51,7 +50,16 @@ class AuthController extends Controller
 
     public function register(RegisterUserRequest $request): JsonResponse
     {
-        $user = User::create($request->validated());
+        $data = $request->validated();
+        
+        if (User::where('email', $data['email'])->exists()) {
+            return $this->errorResponse([
+                'message' => 'Register failed',
+                'email' => 'The email already exists.',
+            ], 'The email already exists.', Response::HTTP_BAD_REQUEST);
+        }
+
+        $user = User::create($data);
 
         return $this->successResponse([
             'message' => 'Register successful',

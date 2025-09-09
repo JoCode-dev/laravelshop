@@ -3,6 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Symfony\Component\HttpFoundation\Response;
 
 class ProductRequest extends FormRequest
 {
@@ -25,7 +28,7 @@ class ProductRequest extends FormRequest
             'name' => 'required|string|max:255',
             'description' => 'required|string|max:255',
             'price' => 'required|numeric',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'stock' => 'required|integer',
         ];
     }
@@ -36,12 +39,19 @@ class ProductRequest extends FormRequest
             'name.required' => 'Name is required',
             'description.required' => 'Description is required',
             'price.required' => 'Price is required',
-            'image.required' => 'Image is required',
             'image.image' => 'Image must be an image',
             'image.mimes' => 'Image must be a jpeg, png, jpg, gif, or svg',
             'image.max' => 'Image must be less than 2MB',
             'stock.required' => 'Stock is required',
             'stock.integer' => 'Stock must be an integer',
         ];
+    }
+
+    public function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(response()->json([
+            'message' => 'Validation failed',
+            'errors' => $validator->errors(),
+        ], Response::HTTP_UNPROCESSABLE_ENTITY));
     }
 }

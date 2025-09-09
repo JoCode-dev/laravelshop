@@ -41,7 +41,7 @@ class PaymentNotification extends Notification implements ShouldQueue
             ->subject('Payment Received')
             ->line('Your payment has been received.')
             ->line('Amount: ' . $this->payment->amount)
-            ->line('Status: ' . $this->payment->status)
+            ->line('Status: ' . $this->payment->status->value)
             ->action('View Payment', url('/payments/' . $this->payment->id))
             ->line('Thank you for using our application!');
     }
@@ -56,7 +56,7 @@ class PaymentNotification extends Notification implements ShouldQueue
         return [
             'payment_id' => $this->payment->id,
             'amount' => $this->payment->amount,
-            'status' => $this->payment->status,
+            'status' => $this->payment->status->value,
         ];
     }
 }

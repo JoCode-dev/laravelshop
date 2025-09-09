@@ -3,6 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Symfony\Component\HttpFoundation\Response;
 
 class CartRequest extends FormRequest
 {
@@ -42,5 +45,13 @@ class CartRequest extends FormRequest
             'price.numeric' => 'Price must be a number',
             'price.min' => 'Price must be greater than 0',
         ];
+    }
+
+    public function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(response()->json([
+            'message' => 'Validation failed',
+            'errors' => $validator->errors(),
+        ], Response::HTTP_UNPROCESSABLE_ENTITY));
     }
 }

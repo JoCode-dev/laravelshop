@@ -27,6 +27,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -44,9 +45,10 @@ class User extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
-    public function simpleUsers(): Collection
+    // Scope to filter only regular users (role = 'user')
+    public function scopeSimpleUsers($query)
     {
-        return $this->where('role', 'user')->get();
+        return $query->where('role', 'user');
     }
 
     /**

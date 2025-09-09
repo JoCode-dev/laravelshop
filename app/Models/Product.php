@@ -18,13 +18,9 @@ class Product extends Model
         'stock',
     ];
 
-    public function count(): int
+    // Relation avec les lignes de commande (order_items)
+    public function orderItems(): HasMany
     {
-        return $this->count();
-    }
-
-    public function orders(): HasMany
-    {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(OrderItem::class);
     }
 }

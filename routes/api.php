@@ -3,7 +3,8 @@
 use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Admin\ProductController;
-use App\Http\Controllers\Api\Admin\CartController;
+use App\Http\Controllers\Api\ProductController as PublicProductController;
+use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PaymentController;
 use Illuminate\Http\Request;
@@ -40,12 +41,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/dashboard/products', [DashboardController::class, 'products']);
     Route::get('/dashboard/orders', [DashboardController::class, 'orders']);
     Route::get('/dashboard/payments', [DashboardController::class, 'payments']);
+    Route::get('/dashboard/top-products', [DashboardController::class, 'topProducts']);
+    Route::get('/dashboard/sell-stats', [DashboardController::class, 'sellStats']);
 });
 
 
 // User routes
-Route::get('/products', [ProductController::class, 'index']);
-Route::get('/products/{product}', [ProductController::class, 'show']);
+Route::get('/products', [PublicProductController::class, 'index']);
+Route::get('/products/{product}', [PublicProductController::class, 'show']);
 
 // Routes publiques (pour les anonymes)
 Route::prefix('cart')->group(function () {
@@ -60,6 +63,6 @@ Route::prefix('cart')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     // Migration du panier session vers DB
     Route::post('/cart/migrate', [CartController::class, 'migrateSessionToDatabase']);
-    
+
     // Autres routes...
 });

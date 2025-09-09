@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -19,13 +20,19 @@ class DashboardController extends Controller
 
     public function index(): JsonResponse
     {
-        $this->authorize('viewAny', Product::class);
+        $user = Auth::user();
+        $this->authorize('viewAny', $user);
+
+        $productsCount = Product::count();
+        $ordersCount = Order::count();
+        $paymentsCount = Payment::count();
+        $simpleUsersCount = User::simpleUsers()->count();
 
         $stats = [
-            'products_count' => Product::count(),
-            'orders_count' => Order::count(),
-            'payments_count' => Payment::count(),
-            'simple_users_count' => User::simpleUsers()->count(),
+            'products_count' => $productsCount,
+            'orders_count' => $ordersCount,
+            'payments_count' => $paymentsCount,
+            'simple_users_count' => $simpleUsersCount,
         ];
 
         return $this->successResponse([
@@ -47,7 +54,7 @@ class DashboardController extends Controller
 
     public function products(Request $request): JsonResponse
     {
-        $this->authorize('viewAny', Product::class);
+        $this->authorize('viewAny', User::class);
         $data = Product::paginate($request->input('per_page', 10));
 
         return $this->successResponse([
@@ -58,7 +65,7 @@ class DashboardController extends Controller
 
     public function orders(Request $request): JsonResponse
     {
-        $this->authorize('viewAny', Order::class);
+        $this->authorize('viewAny', User::class);
 
         $orders = Order::query()
             ->when($request->input('status'), fn(Builder $query, $status) => $query->where('status', $status))
@@ -73,7 +80,8 @@ class DashboardController extends Controller
 
     public function payments(Request $request): JsonResponse
     {
-        $this->authorize('viewAny', Payment::class);
+        $this->authorize('viewAny', User::class);
+
         $data = Payment::paginate($request->input('per_page', 10));
 
         return $this->successResponse([
@@ -84,7 +92,7 @@ class DashboardController extends Controller
 
     public function sellStats(Request $request): JsonResponse
     {
-        $this->authorize('viewAny', Payment::class);
+        $this->authorize('viewAny', User::class);
 
         $stats = Payment::query()
             ->when($request->input('start_date'), fn(Builder $query, $date) => $query->whereDate('created_at', '>=', $date))
@@ -100,13 +108,9 @@ class DashboardController extends Controller
 
     public function topProducts(): JsonResponse
     {
-        $this->authorize('viewAny', Product::class);
+        $this->authorize('viewAny', User::class);
 
-        $products = Product::withCount('orders')
-            ->whereHas('orders')
-            ->orderBy('orders_count', 'desc')
-            ->limit(5)
-            ->get();
+        $products = Product::orderBy('sold_count', 'desc')->limit(5)->get();
 
         return $this->successResponse([
             'message' => 'Top products fetched successfully',
