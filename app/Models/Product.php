@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @mixin IdeHelperProduct
+ */
 class Product extends Model
 {
     protected $fillable = [
@@ -13,4 +16,9 @@ class Product extends Model
         'image',
         'stock',
     ];
+
+    public function count(): int
+    {
+        return $this->count();
+    }
 }

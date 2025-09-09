@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+/**
+ * @mixin IdeHelperOrderItem
+ */
 class OrderItem extends Model
 {
     protected $fillable = ['order_id', 'product_id', 'quantity', 'price'];

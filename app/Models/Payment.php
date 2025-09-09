@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Enums\PaymentStatus;
 
+/**
+ * @mixin IdeHelperPayment
+ */
 class Payment extends Model
 {
     use HasFactory;

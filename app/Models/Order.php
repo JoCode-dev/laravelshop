@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Enums\OrderStatus;
 
+/**
+ * @mixin IdeHelperOrder
+ */
 class Order extends Model
 {
     protected $fillable = ['status', 'user_id', 'total_amount'];
