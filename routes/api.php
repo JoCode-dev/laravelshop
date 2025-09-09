@@ -3,6 +3,9 @@
 use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Admin\ProductController;
+use App\Http\Controllers\Api\Admin\CartController;
+use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\PaymentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -26,8 +29,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // Cart routes
 
     // Order routes
+    Route::post('/orders', [OrderController::class, 'store']);
 
     // Payment routes
+    Route::post('/payments', [PaymentController::class, 'store']);
 
     // Dashboard routes
     Route::get('/dashboard', [DashboardController::class, 'index']);

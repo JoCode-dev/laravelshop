@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @mixin IdeHelperCart
+ */
 class Cart extends Model
 {
     protected $fillable = ['user_id', 'product_id', 'quantity', 'price'];

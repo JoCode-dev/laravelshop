@@ -14,6 +14,33 @@
 namespace App\Models{
 /**
  * @property int $id
+ * @property int $user_id
+ * @property int $product_id
+ * @property int $quantity
+ * @property float $price
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Product $product
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cart newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cart newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cart query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cart whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cart whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cart wherePrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cart whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cart whereQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cart whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cart whereUserId($value)
+ * @mixin \Eloquent
+ */
+	#[\AllowDynamicProperties]
+	class IdeHelperCart {}
+}
+
+namespace App\Models{
+/**
+ * @property int $id
  * @property \App\Enums\OrderStatus $status
  * @property int $user_id
  * @property float $total_amount

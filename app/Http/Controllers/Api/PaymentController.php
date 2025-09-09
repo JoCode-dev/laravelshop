@@ -9,10 +9,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Product;
+use App\Notifications\PaymentNotification;
 use App\Traits\ApiResponses;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Notification;
 use Symfony\Component\HttpFoundation\Response;
 
 class PaymentController extends Controller
@@ -35,6 +37,8 @@ class PaymentController extends Controller
 
         try {
             $payment = $this->processPayment($order);
+
+            Notification::route('mail', $user->email)->notify(new PaymentNotification($payment));
 
             return $this->successResponse([
                 'message' => 'Payment created successfully',
